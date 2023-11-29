@@ -6,6 +6,8 @@ import com.java.dto.CircleVO;
 import com.java.dto.RectangularVO;
 import com.java.dto.Shape;
 import com.java.dto.TriangleVO;
+import com.java.ifc.Inputable;
+import com.java.ifc.Outputable;
 
 public class SurfaceSolution {
 
@@ -30,21 +32,25 @@ public class SurfaceSolution {
 		menu = scann.nextInt();
 		scann.nextLine();
 
+		Inputable inputObject = null;
+		
 		switch (menu) {
 		case 1: // 삼각형
-			s = new TriangleVO();
+			inputObject = new TriangleVO();
 			break;
 		case 2: // 사각형
-			s = new RectangularVO();
+			inputObject = new RectangularVO();
 			break;
 		case 3: // 원
-			s = new CircleVO();
+			inputObject = new CircleVO();
 			break;
 		default:
 			System.out.println("입력이 올바르지 않습니다.");
 		}
 		
-		s.inputData();
+		inputObject.input();
+		s=(Shape)inputObject;
+		
 	}
 
 	protected void process() {
@@ -60,7 +66,10 @@ public class SurfaceSolution {
 	}
 
 	protected void output() {
-		System.out.println(s.outputMessage()+s.surface());
+		
+		Outputable outObject = (Outputable)s; 
+		
+		System.out.println(outObject.output()+s.surface());
 		
 		System.out.println("종료(Q) 혹은 계속하시려면 아무키나 누르세요.");
 		String menu = new Scanner(System.in).nextLine();
