@@ -13,6 +13,9 @@ import com.jdbc.dto.제품VO;
 public class 제품DAO implements DAO<제품VO>{
 
 	private DataSource dataSource = DataSource.getInstance();
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 	
 	@Override
 	public List<제품VO> selectList()throws Exception {
@@ -69,14 +72,35 @@ public class 제품DAO implements DAO<제품VO>{
 	}
 
 	@Override
-	public void update(제품VO e) {
-		// TODO Auto-generated method stub
+	public void update(제품VO e)throws Exception {
+		Connection conn = dataSource.getConncetion();
 		
+		String sql = "update 제품 set "
+					+ "제품명=?,재고량=?,단가=?,제조업체=? "
+					+ "where 제품번호=?";
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		pstmt.setString(1, e.get제품명());
+		pstmt.setInt(2, e.get재고량());
+		pstmt.setInt(3, e.get단가());
+		pstmt.setString(4, e.get제조업체());
+		pstmt.setString(5, e.get제품번호());
+
+		pstmt.executeUpdate();
+		
+		if(pstmt!=null)pstmt.close();
+		if(conn!=null)conn.close();
 	}
 
 	@Override
-	public void delete(String id) {
-		// TODO Auto-generated method stub
+	public void delete(String id)throws Exception {
+		Connection conn = dataSource.getConncetion();
+		String sql = "delete from 제품 where 제품번호='"+id+"'";
+		Statement stmt = conn.createStatement();
+		
+		stmt.executeUpdate(sql);
+		
+		if(stmt!=null) stmt.close();
+		if(conn!=null)conn.close();
 		
 	}
 

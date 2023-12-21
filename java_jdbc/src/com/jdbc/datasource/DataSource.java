@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 
 public class DataSource {
 	private static DataSource instance = new DataSource();;
-	private DataSource() {}
+	//private DataSource() {}
 	public static DataSource getInstance() {
 		return instance;
 	}
