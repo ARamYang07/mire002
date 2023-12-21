@@ -1,6 +1,6 @@
 package com.jdbc.dto;
 
-public class 고객VO {
+public class 고객VO extends VO{
 	private String 고객아이디;
 	private String 고객이름;
 	private int 나이;

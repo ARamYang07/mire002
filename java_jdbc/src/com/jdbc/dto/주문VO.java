@@ -2,7 +2,7 @@ package com.jdbc.dto;
 
 import java.util.Date;
 
-public class 주문VO {
+public class 주문VO extends VO{
 	private String 주문번호;
 	private String 주문고객;
 	private String 주문제품;

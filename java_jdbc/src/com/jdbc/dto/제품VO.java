@@ -1,6 +1,6 @@
 package com.jdbc.dto;
 
-public class 제품VO {
+public class 제품VO extends VO {
 	private String 제품번호;
 	private String 제품명;
 	private int 재고량;
