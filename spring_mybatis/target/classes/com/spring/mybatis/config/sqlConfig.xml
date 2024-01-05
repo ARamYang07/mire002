@@ -10,6 +10,7 @@
 	<typeAlias type="java.lang.Integer" alias="int" />
 	
 	<typeAlias type="com.spring.dto.MemberVO" alias="member"/>
+	<typeAlias type="com.spring.command.PageMaker" alias="pageMaker"/>
 </typeAliases>
 
 </configuration>
