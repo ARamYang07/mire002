@@ -1,6 +1,10 @@
 package com.spring.command;
 
+import java.util.Date;
+
 import org.springframework.web.multipart.MultipartFile;
+
+import com.spring.dto.MemberVO;
 
 public class MemberRegistCommand {
 	
@@ -55,4 +59,27 @@ public class MemberRegistCommand {
 	}
 	
 	
+	public MemberVO toMemberVO() {
+		 MemberVO member = new MemberVO();
+		 member.setEmail(email);
+		 member.setAuthority(authority);
+		 member.setEnabled(1);
+		 member.setId(id);
+		 member.setName(name);
+		 member.setPwd(pwd);
+		 member.setRegDate(new Date());
+		 String phoneTemp="";
+		 for(String p : phone ) {
+			 phoneTemp+=p;
+		 }
+		 member.setPhone(phoneTemp);
+		 
+		 return member;
+	}
+	
 }
+
+
+
+
+
