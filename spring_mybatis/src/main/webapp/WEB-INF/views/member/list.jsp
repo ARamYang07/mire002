@@ -83,8 +83,10 @@
 		               	</tr>
 		               	<c:if test="${not empty memberList }">
 		              	<c:forEach var="member" items="${memberList }">
-		              		<tr>
-		              			<td></td>	
+		              		<tr onclick="OpenWindow('detail?id=${member.id}','상세보기',700,800);"  style="cursor:pointer;">
+		              			<td style = "margin:0;padding:0;padding-top:5px;">
+		              				<span class="manPicture" data-id="${member.id }" style = "display:block;width:40px;height:40px;margin:0 auto;"></span>
+		              			</td>	
 		              			<td>${member.id }</td>
 		              			<td>${member.pwd }</td>
 		              			<td>${member.name }</td>
@@ -121,6 +123,7 @@
 <%@ include file="/WEB-INF/views/module/common_js.jsp" %>
 <!-- REQUIRED SCRIPTS -->
 <script>
+	MemberPictureThumb('<%=request.getContextPath()%>');
 </script>
 
 <%@ include file="/WEB-INF/views/module/footer.jsp" %>
