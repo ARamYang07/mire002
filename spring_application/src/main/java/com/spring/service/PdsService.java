@@ -16,7 +16,9 @@ public interface PdsService {
 	void regist(PdsVO pds)throws SQLException;
 	
 	//읽기
-	PdsVO read(int pno) throws SQLException;
+	void increaseViewCnt(int pno) throws SQLException;
+	
+	PdsVO getPds(int pno) throws SQLException;
 	
 	//수정
 	void modify(PdsVO pds) throws SQLException;

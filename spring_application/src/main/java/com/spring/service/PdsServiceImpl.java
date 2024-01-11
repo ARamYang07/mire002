@@ -31,16 +31,16 @@ public class PdsServiceImpl implements PdsService{
 			List<AttachVO> attachList = attachDAO.selectAttachByPno(pno);
 			pds.setAttachList(attachList);
 		}
+		
+		int listTotalCount = pdsDAO.selectSearchPdsListCount(pageMaker);
+		pageMaker.setTotalCount(listTotalCount);
+		
 		return pdsList;
 	}
 
 	@Override
-	public PdsVO read(int pno) throws SQLException {
-		PdsVO pds = pdsDAO.selectPdsByPno(pno);
-		List<AttachVO> attachList = attachDAO.selectAttachByPno(pno);
-		pds.setAttachList(attachList);
-		
-		return pds;
+	public void increaseViewCnt(int pno) throws SQLException {
+		pdsDAO.increaseViewCnt(pno);
 	}
 	
 	@Override
@@ -55,6 +55,7 @@ public class PdsServiceImpl implements PdsService{
 		
 		if(attachList!=null) for(AttachVO attach : attachList) {
 			attach.setPno(pno);
+			attach.setAttacher(pds.getWriter());
 			attachDAO.insertAttach(attach);
 		}
 		
@@ -90,6 +91,13 @@ public class PdsServiceImpl implements PdsService{
 	public void removeAttachByAno(int ano) throws SQLException {
 		attachDAO.deletAttach(ano);
 		
+	}
+	@Override
+	public PdsVO getPds(int pno) throws SQLException {
+		PdsVO pds = pdsDAO.selectPdsByPno(pno);
+		List<AttachVO> attachList = attachDAO.selectAttachByPno(pno);
+		pds.setAttachList(attachList);
+		return pds;
 	}
 
 }
