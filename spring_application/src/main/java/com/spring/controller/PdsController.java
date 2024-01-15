@@ -9,12 +9,11 @@ import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.command.PageMaker;
 import com.spring.command.PdsModifyCommand;
@@ -24,34 +23,35 @@ import com.spring.dto.PdsVO;
 import com.spring.service.PdsService;
 
 @Controller
-@RequestMapping("/pds")
+
 public class PdsController {
 
 	@Autowired
 	private PdsService pdsService;
 
 	@GetMapping("/list")
-	public String list(@ModelAttribute PageMaker pageMaker, Model model) throws Exception {
+	public ModelAndView list(@ModelAttribute PageMaker pageMaker, ModelAndView mnv) throws Exception {
 		String url="/pds/list";
 		
 		List<PdsVO> pdsList = pdsService.searchList(pageMaker);
 		
-		model.addAttribute("pdsList",pdsList);
-		
-		return url;
+		mnv.addObject("pdsList",pdsList);
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@GetMapping("/registForm")
-	public String registForm() throws Exception {
+	public ModelAndView registForm(ModelAndView mnv) throws Exception {
 		String url="/pds/regist";
-		return url;
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@Resource(name="pdsSavedFilePath")
 	private String fileUploadPath;
 	
 	@PostMapping(value = "/regist", produces = "text/plain;charset=utf-8")
-	public String regist(PdsRegistCommand regCommand) throws Exception {
+	public ModelAndView regist(PdsRegistCommand regCommand, ModelAndView mnv) throws Exception {
 		String url="/pds/regist_success";
 		
 		List<MultipartFile> multiFiles = regCommand.getUploadFile();
@@ -65,58 +65,107 @@ public class PdsController {
 		
 		pdsService.regist(pds);
 		
-		return url;
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@GetMapping("/detail")
-	public String detail(int pno, String from,Model model) throws Exception {
+	public ModelAndView detail(int pno, String from, ModelAndView mnv) throws Exception {
 		String url="/pds/detail";
 		
 		PdsVO pds = null;
 		if (from != null && from.equals("list")) {
 			pdsService.increaseViewCnt(pno);
-			url = "redirect:/pds/detail?pno="+pno;
+			url = "redirect:/detail?pno="+pno;
 		} else {
 			pds = pdsService.getPds(pno);
 		}
 		
-		model.addAttribute("pds",pds);
+		mnv.addObject("pds",pds);
 		
-		return url;
+		mnv.setViewName(url);
+		return mnv;
 	}
 	
 	@GetMapping("/modifyForm")
-	public String modifyForm(int pno,Model model)throws Exception{
+	public ModelAndView modifyForm(int pno, ModelAndView mnv)throws Exception{
 		String url = "/pds/modify";
 		
 		PdsVO pds = pdsService.getPds(pno);
 		
-		model.addAttribute("pds",pds);
-		
-		return url;
+		mnv.addObject("pds",pds);
+		mnv.setViewName(url);
+		return mnv;
 	}
 	
 	@PostMapping("/modify")
-	public String modify(PdsModifyCommand modifyCommand)throws Exception{
-		return null;
+	public ModelAndView modify(PdsModifyCommand modifyCommand, ModelAndView mnv)throws Exception{
+		String url = "/pds/modify_success";
+		
+		//파일삭제
+		if(modifyCommand.getDeleteFile() != null && modifyCommand.getDeleteFile().length > 0) {
+			for(int ano : modifyCommand.getDeleteFile()) {
+				AttachVO attach = pdsService.getAttachByAno(ano);
+				
+				String savedPath = attach.getUploadPath().replace("/", File.separator);
+				
+				File deleteFile = new File(savedPath, attach.getFileName());
+				
+				if(deleteFile.exists()) {
+					deleteFile.delete(); //파일삭제
+				}
+				pdsService.removeAttachByAno(ano); //DB삭제
+			}
+		}
+		
+		//파일저장
+		List<AttachVO> attachList 
+		= saveFileToAttaches(modifyCommand.getUploadFile(), fileUploadPath);
+		
+		//PdsVO setting
+		PdsVO pds = modifyCommand.toPdsVO();
+		pds.setAttachList(attachList);
+		
+		//DB 저장
+		pdsService.modify(pds);
+		
+		mnv.setViewName(url);
+		return mnv;
 	}
 	
 	@GetMapping("/remove")
-	public String remove(int pno)throws Exception{
-		return null;
+	public ModelAndView remove(int pno, ModelAndView mnv)throws Exception{
+		String url="/pds/remove_success";
+		
+		//첨부파일 삭제
+		List<AttachVO> attachList = pdsService.getPds(pno).getAttachList();
+		if(attachList != null) {
+			for(AttachVO attach : attachList) {
+				File target = new File(attach.getUploadPath(), attach.getFileName());
+				if(target.exists()) {
+					target.delete();
+				}
+			}
+		}
+		
+		pdsService.remove(pno);
+		
+		mnv.setViewName(url);
+		return mnv;
 	}
 	
 	@GetMapping("/getFile")
-	public String getFile(int ano, Model model)throws Exception{
+	public ModelAndView getFile(int ano,  ModelAndView mnv)throws Exception{
 		String url="download";
 		
 		AttachVO attach = pdsService.getAttachByAno(ano);
 		
 
-		model.addAttribute("savedPath", attach.getUploadPath());
-		model.addAttribute("fileName", attach.getFileName());		
+		mnv.addObject("savedPath", attach.getUploadPath());
+		mnv.addObject("fileName", attach.getFileName());		
 		
-		return url;
+		mnv.setViewName(url);
+		return mnv;
 	}
 	
 	

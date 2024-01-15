@@ -73,7 +73,7 @@
 										<!-- attaches -->
 										<c:forEach items="${pds.attachList }" var="attach">
 										<div class="col-md-4 col-sm-4 col-xs-12"  style="cursor:pointer;"
-												 onclick="location.href='<%=request.getContextPath()%>/pds/getFile.do?ano=${attach.ano }';">
+												 onclick="location.href='<%=request.getContextPath()%>/getFile.do?ano=${attach.ano }';">
 												<div class="info-box">	
 												 	<span class="info-box-icon bg-yellow"><i class="fa fa-copy"></i></span>
 													<div class="info-box-content">

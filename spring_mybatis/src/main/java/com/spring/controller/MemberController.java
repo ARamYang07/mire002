@@ -20,9 +20,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.command.MemberModifyCommand;
 import com.spring.command.MemberRegistCommand;
@@ -32,23 +32,31 @@ import com.spring.exception.NotExistPictureFileException;
 import com.spring.service.SearchMemberService;
 
 @Controller
-@RequestMapping("/member")
+
 public class MemberController {
 
 	@Autowired
 	private SearchMemberService memberService;
 
 	@GetMapping("/list")
-	public void list(@ModelAttribute PageMaker pageMaker, Model model) throws Exception {
+	public ModelAndView list(@ModelAttribute PageMaker pageMaker, ModelAndView mnv) throws Exception {
+		String url="/member/list";
+		
 		List<MemberVO> memberList = memberService.searchList(pageMaker);
 
-		model.addAttribute("memberList", memberList);
+		//model.addAttribute("memberList", memberList);
+		mnv.addObject("memberList",memberList);
+		mnv.setViewName(url);
+		
+		return mnv;
 	}
 
 	@GetMapping("/registForm")
-	public String registForm() {
+	public ModelAndView registForm(ModelAndView mnv) {
 		String url = "/member/regist";
-		return url;
+		
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@GetMapping("idCheck")
@@ -66,7 +74,7 @@ public class MemberController {
 	}
 
 	@PostMapping(value = "/regist", produces = "text/plain;charset=utf-8")
-	public String regist(MemberRegistCommand regCommand) {
+	public ModelAndView regist(MemberRegistCommand regCommand,ModelAndView mnv) {
 		String url = "/member/regist_success";
 
 		try {
@@ -86,7 +94,10 @@ public class MemberController {
 			url = "/error/500.jsp";
 			e.printStackTrace();
 		}
-		return url;
+		
+		mnv.setViewName(url);
+		
+		return mnv;
 	}
 
 	@Resource(name = "picturePath")
@@ -157,26 +168,29 @@ public class MemberController {
 	}
 
 	@GetMapping("/detail")
-	public String detail(String id, Model model) throws Exception {
+	public ModelAndView detail(String id, ModelAndView mnv) throws Exception {
 		String url = "/member/detail";
 
 		MemberVO member = memberService.detail(id);
 
-		model.addAttribute("member", member);
-
-		return url;
+		mnv.addObject("member", member);
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@GetMapping("/modifyForm")
-	public String modifyForm(String id, Model model) throws Exception {
+	public ModelAndView modifyForm(String id, ModelAndView mnv) throws Exception {
 		String url = "/member/modify";
+		
 		MemberVO member = memberService.detail(id);
-		model.addAttribute("member", member);
-		return url;
+		
+		mnv.addObject("member", member);
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@PostMapping(value = "/modify", produces = "text/plain;charset=utf-8")
-	public String modify(MemberModifyCommand modifyCommand, Model model) throws Exception {
+	public ModelAndView modify(MemberModifyCommand modifyCommand, ModelAndView mnv) throws Exception {
 		String url = "/member/modify_success";
 		MemberVO member = modifyCommand.toMemberVO();
 		String oldPicture = modifyCommand.getOldPicture();
@@ -191,12 +205,13 @@ public class MemberController {
 		// DB 수정
 		memberService.modify(member);
 
-		model.addAttribute("id", member.getId());
-		return url;
+		mnv.addObject("id", member.getId());
+		mnv.setViewName(url);
+		return mnv;
 	}
 
 	@GetMapping(value = "/remove")
-	public String remove(String id) throws Exception {
+	public ModelAndView remove(String id,ModelAndView mnv) throws Exception {
 		String url = "/member/remove_success";
 
 		// 이미지 파일을 삭제
@@ -209,6 +224,7 @@ public class MemberController {
 		// db삭제
 		memberService.remove(id);
 
-		return url;
+		mnv.setViewName(url);
+		return mnv;
 	}
 }

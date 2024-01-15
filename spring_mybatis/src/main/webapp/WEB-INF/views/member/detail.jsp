@@ -94,7 +94,7 @@
 
 <%@ include file="/WEB-INF/views/module/common_js.jsp" %>
 <script>
-MemberPictureThumb('<%=request.getContextPath()%>');
+MemberPictureThumb('');
 </script>
 
 

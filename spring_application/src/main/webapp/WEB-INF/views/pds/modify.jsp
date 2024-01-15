@@ -65,7 +65,7 @@
 											<c:forEach items="${pds.attachList }" var="attach" >
 											<li class="attach-item thumb${attach.ano}" file-name="${attach.fileName.split('\\$\\$')[1] }" target-ano="${attach.ano }" >																			
 												<div class="mailbox-attachment-info ">
-													<a class="mailbox-attachment-name" name="attachedFile" href="<%=request.getContextPath()%>/pds/getFile.do?ano=${attach.ano} " >													
+													<a class="mailbox-attachment-name" name="attachedFile" href="<%=request.getContextPath()%>/getFile.do?ano=${attach.ano} " >													
 														<i class="fas fa-paperclip"></i>
 														${attach.fileName.split('\\$\\$')[1] }&nbsp;&nbsp;
 														<button type="button" 
@@ -110,7 +110,7 @@ function addFile_go(){
 	}
 	
 	var div=$('<div>').addClass("inputRow").attr("data-no",dataNum);		
-	var input=$('<input>').attr({"type":"file","name":"uploadFile"}).css("display","inline");
+	var input=$('<input>').attr({"type":"file","name":"uploadFile","onchange":"fileChange_go("+dataNum+");"}).css("display","inline");
 	div.append(input).append("<button onclick='remove_go("+dataNum+");' style='border:0;outline:0;' class='badge bg-red' type='button'>X</button>");		
 	$('.fileInput').append(div);
 	dataNum++;		
@@ -158,6 +158,22 @@ function modify_submit(){
 	
 	form.submit();
 
+}
+
+
+function fileChange_go(dataNum){
+    //alert("file change");
+    let input = $('div[data-no="'+dataNum+'"] input[type="file"]')[0];
+    let file = input.files[0];
+	if(file.size > 1024*1024*40){
+		alert("첨부파일크기는 40MB 이하만 가능합니다.");
+    	input.value="";
+	}
+}
+
+function remove_go(dataNum){
+	let div = $('div[data-no="'+dataNum+'"]');
+	div.remove();
 }
 </script>
 <%@ include file="/WEB-INF/views/module/footer.jsp" %>

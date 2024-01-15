@@ -1,5 +1,7 @@
 package com.spring.command;
 
+import com.spring.dto.PdsVO;
+
 public class PdsModifyCommand extends PdsRegistCommand{
 	
 	
@@ -20,5 +22,12 @@ public class PdsModifyCommand extends PdsRegistCommand{
 		this.deleteFile = deleteFile;
 	}
 	
+   @Override
+   public PdsVO toPdsVO() {
+      PdsVO pds = super.toPdsVO();
+      pds.setPno(this.pno);
+      
+      return pds;
+   }
 	
 }

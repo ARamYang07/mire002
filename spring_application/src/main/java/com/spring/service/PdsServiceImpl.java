@@ -71,6 +71,7 @@ public class PdsServiceImpl implements PdsService{
 		List<AttachVO> attachList = pds.getAttachList();
 		if(attachList!=null) for(AttachVO attach : attachList) {
 			attach.setPno(pno);
+			attach.setAttacher(pds.getWriter());
 			attachDAO.insertAttach(attach);
 		}
 		

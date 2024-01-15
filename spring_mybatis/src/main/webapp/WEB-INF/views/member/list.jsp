@@ -123,7 +123,7 @@
 <%@ include file="/WEB-INF/views/module/common_js.jsp" %>
 <!-- REQUIRED SCRIPTS -->
 <script>
-	MemberPictureThumb('<%=request.getContextPath()%>');
+	MemberPictureThumb('');
 </script>
 
 <%@ include file="/WEB-INF/views/module/footer.jsp" %>
