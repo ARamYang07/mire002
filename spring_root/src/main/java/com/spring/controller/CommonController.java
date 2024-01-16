@@ -1,7 +1,10 @@
 package com.spring.controller;
 
+import java.io.PrintWriter;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +34,17 @@ public class CommonController {
 	@Autowired
 	private MenuService menuService;
 	
+	
 	@GetMapping("/index.do")
-	public ModelAndView main(ModelAndView mnv) throws Exception{
+	public ModelAndView main(String mCode,ModelAndView mnv) throws Exception{
 		String url="/common/indexPage";
 		
 	    List<MenuVO> menuList = menuService.getMainMenuList();
+	   
+	    if(mCode!=null) {
+	    	MenuVO menu = menuService.getMenuByMcode(mCode);
+	    	mnv.addObject("menu",menu);
+	    }
 	    
 		mnv.addObject("menuList",menuList);
 		mnv.setViewName(url);
@@ -43,15 +52,15 @@ public class CommonController {
 	}
 	
 	@GetMapping("/common/loginForm")
-	public ModelAndView loginForm(ModelAndView mnv)throws Exception{
+	public ModelAndView loginForm(ModelAndView mnv,String retUrl)throws Exception{
 		String url="/common/loginForm";
-		
+		mnv.addObject("retUrl",retUrl);
 		mnv.setViewName(url);
 		return mnv;
 	}
 	
 	@PostMapping("/common/login")
-	public ModelAndView loginPost(String id, String pwd, 
+	public ModelAndView loginPost(String id, String pwd, String retUrl,
 								  HttpSession session, 
 								  RedirectAttributes rttr,
 								  ModelAndView mnv)throws Exception{
@@ -61,11 +70,18 @@ public class CommonController {
 			memberService.login(id, pwd);
 			
 			MemberVO member = memberDAO.selectMemberById(id);
+			
 			session.setAttribute("loginUser", member);
-			session.setMaxInactiveInterval(6*60);
+			session.setMaxInactiveInterval(10);
+			
+			session.getServletContext().setAttribute("loginUser", member.getId());
+			
+			if(retUrl!=null && !retUrl.isEmpty()) {
+				url="redirect:"+retUrl;
+			}
 			
 		}catch(NotFoundIdentityException | InvalidPasswordException e) {
-			url="redirect:/common/loginForm";
+			url="redirect:/common/loginForm?retUrl="+retUrl;
 			// rttr.addAttribute(attributeValue) : 주소줄 데이터 전달
 			rttr.addFlashAttribute("message",e.getMessage()); //requset 전달방식
 		}
@@ -79,6 +95,7 @@ public class CommonController {
 		String url="redirect:/";
 	
 		session.invalidate();
+		session.getServletContext().removeAttribute("loginUser");;
 		
 		mnv.setViewName(url);
 		return mnv;

@@ -257,10 +257,28 @@ function subMenu_go(mCode){
 
 function goPage(url,mCode){
 	//alert(url+":"+mCode);
-	$('iframe[name="ifr"]').attr("src",url);
+ 
+    $('iframe[name="ifr"]').attr("src",url);
+
+   var renewURL = location.href;
+   //현재 주소 중 .do 뒤 부분이 있다면 날려버린다.
+   renewURL = renewURL.substring(0, renewURL.indexOf(".do")+3);
+   
+   if (mCode != 'M000000') {
+       renewURL += "?mCode="+mCode;
+   }
+   //페이지를 리로드하지 않고 페이지 주소만 변경할 때 사용
+   history.pushState(mCode, null, renewURL);
 }
 </script>
 
+<c:if test="${not empty menu }">
+<script>
+goPage('<%=request.getContextPath()%>${menu.murl}','${menu.mcode}');
+subMenu_go('${menu.mcode}'.substring(0,3)+"0000");
+
+</script>
+</c:if>
 <%@ include file="/WEB-INF/views/module/footer.jsp" %>    
 
 

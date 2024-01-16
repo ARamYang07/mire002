@@ -35,7 +35,7 @@
 							<div class="form-group">
 								<label for="writer">작성자</label> 
 								<input type="text" id="writer" readonly
-									name="writer" class="form-control" value="mimi">
+									name="writer" class="form-control" value="${loginUser}">
 							</div>
 							<div class="form-group">
 								<label for="title">제 목</label> 
