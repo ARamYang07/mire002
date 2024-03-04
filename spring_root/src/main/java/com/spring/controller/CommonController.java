@@ -72,7 +72,7 @@ public class CommonController {
 			MemberVO member = memberDAO.selectMemberById(id);
 			
 			session.setAttribute("loginUser", member);
-			session.setMaxInactiveInterval(10);
+			session.setMaxInactiveInterval(60*6);
 			
 			session.getServletContext().setAttribute("loginUser", member.getId());
 			

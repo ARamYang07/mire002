@@ -196,11 +196,14 @@ public class MemberController {
 		String oldPicture = modifyCommand.getOldPicture();
 		MultipartFile multi = modifyCommand.getPicture();
 		// 파일 저장 및 삭제
-		String fileName = savePicture(oldPicture, multi);
-		if (fileName == null || fileName.isEmpty()) {
-			member.setPicture(oldPicture);
-		} else {
+		try {
+			String fileName = savePicture(oldPicture, multi);
 			member.setPicture(fileName);
+		}catch (NotExistPictureFileException e) {
+			member.setPicture(oldPicture);
+		}catch (Exception e) {
+			url = "/error/500.jsp";
+			e.printStackTrace();
 		}
 		// DB 수정
 		memberService.modify(member);
